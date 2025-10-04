@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Actual vs Predicted Price</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+<svg width="800" height="500"></svg>
+<script>
+    d3.csv("../output/predictions.csv").then(function(data) {
+      const svg = d3.select("svg"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height");
+
+      const x = d3.scaleLinear().domain([0, d3.max(data, d => +d.label)]).range([50, width-50]);
+      const y = d3.scaleLinear().domain([0, d3.max(data, d => +d.prediction)]).range([height-50, 50]);
+
+      svg.append("g").attr("transform", `translate(0,${height-50})`).call(d3.axisBottom(x));
+      svg.append("g").attr("transform", `translate(50,0)`).call(d3.axisLeft(y));
+
+      svg.selectAll("circle")
+        .data(data)
+        .enter().append("circle")
+        .attr("cx", d => x(+d.label))
+        .attr("cy", d => y(+d.prediction))
+        .attr("r", 4)
+        .style("fill", "steelblue");
+    });
+</script>
+</body>
+</html>
